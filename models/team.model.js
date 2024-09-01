@@ -27,6 +27,10 @@ const teamSchema = new Schema({
     type: String,
     required: true,
   },
+  display: {
+    type: Number,
+    default: 99
+  },
   avatar: imageSchema,
   cover:imageSchema,
   socialLinks: {
