@@ -25,14 +25,14 @@ class projectController {
       res.status(201).json({
         result: savedProject,
         status: true,
-        msg: "Project created successfully",
+        msg: "success! project created",
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       next({
         result: error,
-        status: false,
-        msg: "error creating project",
+        status: 400,
+        msg: "server error! cannot create project",
       });
     }
   };
@@ -50,7 +50,7 @@ class projectController {
       next({
         result: error,
         status: false,
-        msg: "error retriving projects",
+        msg: "server error! cannot fetch projects",
       });
     }
   };
@@ -70,7 +70,7 @@ class projectController {
         res.status(200).json({
           result: project,
           status: true,
-          msg: "User retrived",
+          msg: "project retrived",
         });
       }
     } catch (error) {
@@ -113,7 +113,7 @@ class projectController {
           url: file.path,
           caption: file.originalname,
         }));
-      } else if (req.files) {
+      } else if (req.files) {   // single image
         newImages = {
           url: req.files.path,
           caption: req.files.originalname,
@@ -128,19 +128,19 @@ class projectController {
         { new: true }
       );
 
-      if (!updatedProject) {
-        return res.status(404).json({
+      if (updatedProject) {
+        return res.status(200).json({
+          result: updatedProject,
+          status: true,
+          msg: "project updated",
+        });
+      } else{
+        return res.status(400).json({
           result: null,
           status: false,
-          msg: "project not found",
+          msg: "error! cannot update project",
         });
       }
-
-      res.status(200).json({
-        result: updatedProject,
-        status: true,
-        msg: "project updated",
-      });
     } catch (error) {
       console.log(error);
       next({

@@ -8,7 +8,7 @@ import isLoggedIn from "../middlewares/auth.middleware.js";
 
 // Importing the default export and destructuring
 import uploader from "../middlewares/uploader.middleware.js";
-const { uploadArrayImages, uploadImagesArray } = uploader;
+const { uploadArrayImages } = uploader;
 
 router.use(isLoggedIn);
 

@@ -16,6 +16,7 @@ const LocationSchema = new Schema({
 // Schema for year details
 const YearSchema = new Schema({
   start: { type: Date },
+  expected: {type: Date},
   completion: { type: Date },
 });
 
@@ -45,13 +46,18 @@ const ImageSchema = new Schema({
 const ProjectSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  location: { type: LocationSchema, required: true },
   architectureStyle: { type: String },
   projectType: {
     type: String,
-    enum: ["architecture", "construction"],
+    enum: ["architecture", "construction", "structure"],
     required: true,
   },
+  projectStatus: {
+    type: String,
+    enum: ["planned", "in-progress", "completed", "on-hold", "cancelled"],
+    required: true,
+  },
+  location: { type: LocationSchema, required: true },
   siteArea: {
     value: { type: Number },
     unit: { type: String },
@@ -69,11 +75,6 @@ const ProjectSchema = new Schema({
   },
   materialsUsed: [String],
   sustainabilityFeatures: [String],
-  projectStatus: {
-    type: String,
-    enum: ["planned", "in-progress", "completed", "on-hold", "cancelled"],
-    required: true,
-  },
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: "User",

@@ -41,7 +41,7 @@ class AuthController {
       next({
         result: error,
         status: 500,
-        msg: "An error occurred during the login process",
+        msg: "Server Error! Login failed",
       });
     }
   };
@@ -54,9 +54,9 @@ class AuthController {
       const usernameExist = await User.findOne({ username: data.username });
       if (usernameExist) {
         return res.status(400).json({
-          result: { username: data.username },
+          result: null,
           status: false,
-          msg: "Username already taken",
+          msg: "username already taken",
         });
       }
 
@@ -64,9 +64,9 @@ class AuthController {
       const emailExist = await User.findOne({ email: data.email });    
       if (emailExist) {
         return res.status(400).json({
-          result: { email: data.email },
+          result: null,
           status: false,
-          msg: "Email already registered",
+          msg: "email address already registered",
         });
       }
 
@@ -77,13 +77,19 @@ class AuthController {
         res.status(201).json({
           result: response,
           status: true,
-          msg: "User registered",
+          msg: "user registered successfully",
         });
+      } else{
+        res.status(400).json({
+          result: null,
+          status: false,
+          msg: "cannot register this user"
+        })
       }
     } catch (error) {
       next({
         result: error,
-        status: false,
+        status: 500,
         msg: "An error occurred during the registration process",
       });
     }

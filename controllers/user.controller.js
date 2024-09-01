@@ -7,8 +7,8 @@ class userController {
       const users = await User.find();
       if (!users) {
         res.status(404).json({
-          result: users,
-          status: true,
+          result: null,
+          status: false,
           msg: "Users not found",
         });
       } else {
@@ -175,13 +175,13 @@ class userController {
       const id = req.params.id;    
       
       // cannot delete currently logged in user
-      // if(id == req.user._id){
-      //   return res.status(401).json({
-      //     result: null,
-      //     status: false,
-      //     msg: "logged in user cannot be deleted!"
-      //   })
-      // }
+      if(id == req.user._id){
+        return res.status(401).json({
+          result: null,
+          status: false,
+          msg: "logged in user cannot be deleted!"
+        })
+      }
 
       const user = await User.findByIdAndDelete(req.user._id);
 

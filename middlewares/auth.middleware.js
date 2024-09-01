@@ -24,7 +24,7 @@ const authMiddleware = async (req, res, next) => {
       return res.status(400).json({
         result: null,
         status: false,
-        msg: "Token not provided",
+        msg: "login required",
       });
     }
 
@@ -46,6 +46,7 @@ const authMiddleware = async (req, res, next) => {
         password: 0,
       });
 
+      // if user not found
       if (!userData) {
         return res.status(404).json({
           result: null,
@@ -61,8 +62,8 @@ const authMiddleware = async (req, res, next) => {
     } catch (error) {
       next({
         result: null,
-        status: false,
-        msg: "Unauthorized, Invalid token",
+        status: 401,
+        msg: "Unauthorized! Invalid token",
       });
     }
   };
