@@ -54,6 +54,6 @@ const fileUpload = multer({
 
 // Configuration for single and array uploads
  const uploadSingleImage = imageUpload.single('image');
- const uploadArrayImages = imageUpload.array('images', 10);
+ const uploadArrayImages = imageUpload.array('images');
 
 export default { uploadImages, uploadSingleImage, uploadArrayImages, fileUpload };

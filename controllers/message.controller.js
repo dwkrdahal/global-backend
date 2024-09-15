@@ -8,30 +8,36 @@ class messageController {
       let sender;
       let senderName;
       let senderEmail;
+      let senderPhone;
 
       // If logged in
       if (req.user) {
         sender = req.user._id;
-        senderName = req.user.profile.fullName;
+        senderName = req.user.fullName;
         senderEmail = req.user.email;
       } else {
         senderName = req.body.senderName;
         senderEmail = req.body.senderEmail;
+        senderPhone = req.body.senderPhone
       }
 
+      let images = null
+      let attachments = null
       // prepare image and file
-      const images = files
-        .filter((file) => file.mimetype.startsWith("image/"))
-        .map((file) => ({ url: file.path, caption: file.originalname }));
-      const attachments = files
-        .filter((file) => !file.mimetype.startsWith("image/"))
-        .map((file) => ({ url: file.path, name: file.originalname }));
-
+      if (files) {
+        images = files
+          .filter((file) => file.mimetype.startsWith("image/"))
+          .map((file) => ({ url: file.path, caption: file.originalname }));
+        attachments = files
+          .filter((file) => !file.mimetype.startsWith("image/"))
+          .map((file) => ({ url: file.path, name: file.originalname }));
+      }
       //creste new message
       const newMessage = new Message({
         sender,
         senderName,
         senderEmail,
+        senderPhone,
         message,
         projectId,
         images,
@@ -46,11 +52,11 @@ class messageController {
         msg: "message sent successfully",
       });
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       next({
         result: error,
         status: false,
-        msg: "error while creating message",
+        msg: `${error.name}: ${error?.message}`,
       });
     }
   };
@@ -141,19 +147,19 @@ class messageController {
         { new: true }
       );
 
-      if(!updatedMessage){
+      if (!updatedMessage) {
         return res.status(404).json({
           result: null,
           status: false,
-          msg: "no message found"
-        })
+          msg: "no message found",
+        });
       }
-      
+
       res.status(200).json({
         result: updatedMessage,
         status: true,
-        msg: "response successfully sent"
-      })
+        msg: "response successfully sent",
+      });
     } catch (error) {
       console.log(error);
       next({

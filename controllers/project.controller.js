@@ -12,6 +12,11 @@ class projectController {
           url: file.path,
           caption: file.originalname,
         }));
+      } else if (req.file) {
+        images.push({
+          url: req.file.path,
+          caption: req.file.originalname,
+        });
       }
 
       const newProject = new Project({
@@ -28,7 +33,7 @@ class projectController {
         msg: "success! project created",
       });
     } catch (error) {
-      // console.log(error);
+      // console.error(error);
       next({
         result: error,
         status: 400,
@@ -83,7 +88,8 @@ class projectController {
     }
   };
 
-  //update project
+  // Update Project - Images Handling
+  // Update project with image addition and deletion
   updateProject = async (req, res, next) => {
     try {
       const data = req.body;
@@ -95,33 +101,36 @@ class projectController {
         return res.status(404).json({
           result: null,
           status: false,
-          msg: "project not found",
+          msg: "Project not found",
         });
       }
 
       let { images } = project;
       let newImages = [];
-      
+
       // Ensure `images` is an array
       if (!Array.isArray(images)) {
         images = images ? [images] : [];
-      }      
+      }
 
-      //if had  some images
+      // Handle new image uploads
       if (req.files && req.files.length > 0) {
         newImages = req.files.map((file) => ({
           url: file.path,
           caption: file.originalname,
         }));
-      } else if (req.files) {   // single image
-        newImages = {
-          url: req.files.path,
-          caption: req.files.originalname,
-        };
       }
 
+      // Merge old and new images
       images = [...images, ...newImages];
 
+      // Handle image deletions
+      if (data.deletedImages) {
+        const deletedImages = JSON.parse(data.deletedImages);
+        images = images.filter((image) => !deletedImages.includes(image.url));
+      }
+
+      // Update the project with the new image array
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
         { ...data, images },
@@ -132,13 +141,13 @@ class projectController {
         return res.status(200).json({
           result: updatedProject,
           status: true,
-          msg: "project updated",
+          msg: "Project updated",
         });
-      } else{
+      } else {
         return res.status(400).json({
           result: null,
           status: false,
-          msg: "error! cannot update project",
+          msg: "Error! Cannot update project",
         });
       }
     } catch (error) {
@@ -146,7 +155,7 @@ class projectController {
       next({
         result: error,
         status: false,
-        msg: "error while updating project",
+        msg: "Error while updating project",
       });
     }
   };

@@ -12,6 +12,10 @@ const MessageSchema = new Schema({
   },
   senderEmail: {
     type: String,
+    required: false,
+  },
+  senderPhone : {
+    type: String,
     required: true,
   },
   message: {
