@@ -1,14 +1,9 @@
 import {Schema, model} from "mongoose";
 
-// Schema for images
-const imageSchema = new Schema({
-  url: String,
-  caption: String,
-});
-
 const serviceSchema = new Schema({
-  image: imageSchema, 
-  icon: imageSchema, 
+  icon: {
+    type: String,
+  }, 
   title: { 
     type: String, 
     required: true 
@@ -17,13 +12,12 @@ const serviceSchema = new Schema({
     type: String, 
     required: true 
   },
-  category: { 
-    type: String, 
-    required: true 
-  },
   status: { 
     type: Boolean, 
     default: true 
+  },
+  link: {
+    type: String
   }
 }, {
   timestamps: true

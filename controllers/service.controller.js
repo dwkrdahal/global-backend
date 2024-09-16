@@ -4,18 +4,9 @@ class serviceController {
   addService = async (req, res, next) => {
     try {
       const data = req.body;
-      const icon = {};
       const image = {};
 
-      console.log("files", req.files);
-
-      if (req.files.icon && req.files.icon?.length > 0) {
-        const iconFile = req.files.icon[0];
-        icon.url = iconFile.path;
-        icon.caption = iconFile.originalname;
-      }
-
-      if (req.files.icon && req.files.image?.length > 0) {
+      if (req.files?.images && req.files?.image?.length > 0) {
         const imageFile = req.files.image[0];
         image.url = imageFile.path;
         image.caption = imageFile.originalname;
@@ -23,7 +14,6 @@ class serviceController {
 
       const newService = new Service({
         ...data,
-        icon,
         image,
       });
       const addedService = await newService.save();
@@ -34,12 +24,11 @@ class serviceController {
         msg: "service added",
       });
     } catch (error) {
-      console.log(error);
-
+      // console.log(error);
       next({
         result: error,
         status: false,
-        msg: "error adding service",
+        msg: "server error",
       });
     }
   };
@@ -130,6 +119,7 @@ class serviceController {
       const serviceId = req.params.id;
       const data = req.body;
 
+      //find service by ID
       const service = await Service.findById(serviceId);
       if(!service){
         return res.status(404).json({
@@ -139,18 +129,8 @@ class serviceController {
         })
       }
 
-      let {icon, image} = service;
-
-      console.log(req.files.icon);
-      console.log(req.files.image);
+      let {image} = service;
       
-
-      if (req.files?.icon && req.files.icon?.length > 0) {
-        const iconFile = req.files.icon[0];
-        icon.url = iconFile.path;
-        icon.caption = iconFile.originalname;
-      }
-
       if (req.files?.image && req.files.image?.length > 0) {
         const imageFile = req.files.image[0];
         image.url = imageFile.path;
@@ -158,7 +138,7 @@ class serviceController {
       }
 
       const updatedService = await Service.findByIdAndUpdate(serviceId,
-        {...data, icon, image},
+        {...data, image},
         {new: true}
       )
 

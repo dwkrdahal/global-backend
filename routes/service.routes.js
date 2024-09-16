@@ -8,18 +8,19 @@ import uploader from "../middlewares/uploader.middleware.js";
 const { uploadImages } = uploader;
 
 // /service
-router.route("/")
-  .post( uploadImages([
-    { name: "icon", maxCount: 1 },
-    { name: "image", maxCount: 1 } ]), serviceCtrl.addService)
-  .get(serviceCtrl.getAllServices)
+router
+  .route("/")
+  .post(uploadImages([{ name: "image", maxCount: 1 }]), serviceCtrl.addService)
+  .get(serviceCtrl.getAllServices);
 
-  // /service/:id
-router.route("/:id")
-    .get(serviceCtrl.getServiceById)
-    .delete(serviceCtrl.deleteServiceById)
-    .patch( uploadImages([
-      { name: "icon", maxCount: 1 },
-      { name: "image", maxCount: 1 } ]), serviceCtrl.updateService)
+// /service/:id
+router
+  .route("/:id")
+  .get(serviceCtrl.getServiceById)
+  .delete(serviceCtrl.deleteServiceById)
+  .patch(
+    uploadImages([{ name: "image", maxCount: 1 }]),
+    serviceCtrl.updateService
+  );
 
 export default router;
