@@ -1,18 +1,5 @@
 import { Schema, model } from "mongoose";
 
-// Schema for location details
-const LocationSchema = new Schema({
-  address: String,
-  city: String,
-  district: String,
-  state: String,
-  country: String,
-  coordinates: {
-    latitude: { type: String },
-    longitude: { type: String },
-  },
-});
-
 // Schema for year details
 const YearSchema = new Schema({
   started: { type: Date },
@@ -42,9 +29,10 @@ const ProjectSchema = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     architectureStyle: { type: String },
+    isFeatured: {type: Boolean, default: false},
+    isActive: {type: Boolean, default: true},
     projectType: {
       type: String,
-      enum: ["residential", "commercial", "industrial", "mixed-use"],
       required: true,
     },
     projectStatus: {
@@ -64,6 +52,7 @@ const ProjectSchema = new Schema(
     year: { type: YearSchema },
     designArchitect: { type: DesignArchitectSchema },
     images: [ImageSchema],
+    mainImage: ImageSchema,
     client: {
       name: { type: String, required: true },
       email:{ type: String, },

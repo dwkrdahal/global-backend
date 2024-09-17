@@ -6,8 +6,9 @@ class projectController {
     try {
       const data = req.body;
       let images = [];
+      let mainImage = null;
 
-      if (req.files) {
+      if (req.files && req.files.length > 0) {
         images = req.files.map((file) => ({
           url: file.path,
           caption: file.originalname,
@@ -19,9 +20,13 @@ class projectController {
         });
       }
 
+      // Assign the first image as mainImage if available
+      mainImage = images.length > 0 ? images[0] : null;
+
       const newProject = new Project({
         ...data,
         images,
+        mainImage,
         createdBy: req.user._id,
       });
 
@@ -33,7 +38,6 @@ class projectController {
         msg: "success! project created",
       });
     } catch (error) {
-      // console.error(error);
       next({
         result: error,
         status: 400,
@@ -105,7 +109,7 @@ class projectController {
         });
       }
 
-      let { images } = project;
+      let { images, mainImage } = project;
       let newImages = [];
 
       // Ensure `images` is an array
@@ -128,12 +132,23 @@ class projectController {
       if (data.deletedImages) {
         const deletedImages = JSON.parse(data.deletedImages);
         images = images.filter((image) => !deletedImages.includes(image.url));
+
+        // If the main image is deleted, reassign it
+        if (deletedImages.includes(mainImage?.url)) {
+          // Choose a new main image from remaining images
+          const newMainImage = images.length > 0 ? images[0] : null;
+          mainImage = newMainImage;
+        }
       }
 
-      // Update the project with the new image array
+      // Update the project with the new image array and mainImage
       const updatedProject = await Project.findByIdAndUpdate(
         projectId,
-        { ...data, images },
+        {
+          ...data,
+          images,
+          mainImage,
+        },
         { new: true }
       );
 
@@ -187,6 +202,98 @@ class projectController {
       });
     }
   };
+
+  getAllStyles = async (req, res, next) => {
+    try {
+      // Fetch all projects from the database
+      const projects = await Project.find({}, "projectType");
+
+      // Extract and collect all unique styles
+      const uniqueStyles = [
+        ...new Set(projects.map((project) => project.projectType)),
+      ];
+
+      // Return the array of unique styles
+      res.status(200).json({ styles: uniqueStyles });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch project styles" });
+    }
+  };
+
+  getAllFeaturedProjects = async (req, res, next) => {
+    try {
+      const projects = await Project.find({ isFeatured: true });
+      res.status(200).json({
+        result: projects,
+        status: true,
+        msg: "featured projects retrieved successfully",
+      });
+    } catch (error) {
+      next({
+        result: error,
+        status: false,
+        msg: error.message,
+      });
+    }
+  };
+
+  updateMainImage = async (req, res, next) => {
+    try {
+      const projectId = req.params.id; // Get the project ID from the URL parameters
+      const { selectedMainImage } = req.body; // Get the new main image from the request body
+  
+      if (!selectedMainImage || !selectedMainImage._id) {
+        return res.status(400).json({
+          result: null,
+          status: false,
+          msg: "New main image is required and must include an ID",
+        });
+      }
+  
+      // Find the project by ID
+      const project = await Project.findById(projectId);
+  
+      if (!project) {
+        return res.status(404).json({
+          result: null,
+          status: false,
+          msg: "Project not found",
+        });
+      }
+  
+      // Check if the new main image _id is in the list of images
+      const isImageInList = project.images.some(image => image._id.toString() === selectedMainImage._id);
+  
+      if (!isImageInList) {
+        return res.status(400).json({
+          result: null,
+          status: false,
+          msg: "Selected image is not part of the project images",
+        });
+      }
+  
+      // Update the main image to the image with the selected _id
+      project.mainImage = project.images.find(image => image._id.toString() === selectedMainImage._id);
+  
+      // Save the updated project
+      const updatedProject = await project.save();
+  
+      return res.status(200).json({
+        result: updatedProject,
+        status: true,
+        msg: "Main image updated successfully",
+      });
+    } catch (error) {
+      console.error(error);
+      next({
+        result: error,
+        status: 500,
+        msg: "Server error! Unable to update main image",
+      });
+    }
+  };
+
 }
 
 export default projectController;
