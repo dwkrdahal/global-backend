@@ -12,6 +12,7 @@ import teamRoutes from "./team.routes.js";
 import serviceRoutes from "./service.routes.js";
 import featureRoutes from "./feature.routes.js"
 import clientLogoRoutes from "./client-logo.routes.js"
+import testimonyRoutes from "./testimony.routes.js"
 
 app.use("/", homeRoutes);
 app.use("/auth", authRoutes);
@@ -23,5 +24,6 @@ app.use("/team", teamRoutes);
 app.use("/service", serviceRoutes);
 app.use("/feature", featureRoutes);
 app.use("/logo", clientLogoRoutes)
+app.use("/testimony", testimonyRoutes);
 
 export default app;
