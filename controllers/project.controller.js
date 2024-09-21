@@ -83,7 +83,7 @@ class projectController {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       next({
         result: error,
         status: false,
@@ -166,7 +166,7 @@ class projectController {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       next({
         result: error,
         status: false,
@@ -216,7 +216,7 @@ class projectController {
       // Return the array of unique styles
       res.status(200).json({ styles: uniqueStyles });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       res.status(500).json({ error: "Failed to fetch project styles" });
     }
   };
@@ -285,7 +285,7 @@ class projectController {
         msg: "Main image updated successfully",
       });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       next({
         result: error,
         status: 500,
