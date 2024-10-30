@@ -1,6 +1,27 @@
 import Feature from "../models/feature.model.js";
 
 class featureController {
+   // Feature count function
+   countFeature = async (req, res, next) => {
+    try {
+      const serviceCount = await Feature.countDocuments(); // Get total count of services
+
+      res.status(200).json({
+        result: { count: serviceCount },
+        status: true,
+        msg: "success! service count retrieved",
+      });
+    } catch (error) {
+      console.error("Error counting services:", error);
+
+      next({
+        result: error,
+        status: false,
+        msg: "server error! cannot retrieve service count",
+      });
+    }
+  };
+  
   // get all features
   getAllFeatures = async (req, res, next) => {
     try {

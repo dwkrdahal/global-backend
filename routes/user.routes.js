@@ -9,25 +9,22 @@ const userCtrl = new userController();
 import isLoggedIn from "../middlewares/auth.middleware.js";
 
 //checking middleware at first for all routes
-router.use(isLoggedIn)
+router.use(isLoggedIn);
 
 // /user
-router.route("/")
-  .get( userCtrl.getAllUsers);
+router.route("/").get(userCtrl.getAllUsers);
+
+router.route("/count").get(userCtrl.countUser);
 
 // /user/bulk
-router.route("/bulk")
-    .patch(userCtrl.bulkUpdate)
-    .delete(userCtrl.bulkDelete);
+router.route("/bulk").patch(userCtrl.bulkUpdate).delete(userCtrl.bulkDelete);
 
 //updateprofile
 // /user/update/profile
-router.route("/update/profile") 
-    .patch(userCtrl.updateProfile);
+router.route("/update/profile").patch(userCtrl.updateProfile);
 
-    // /user/delete/all
-router.route("/delete/all")
-    .delete(userCtrl.deleteAllUsers)
+// /user/delete/all
+router.route("/delete/all").delete(userCtrl.deleteAllUsers);
 
 // /user/:id
 router

@@ -42,6 +42,11 @@ const userSchema = new Schema(
       enum: ["active", "inactive"],
       default: "inactive",
     },
+    approval_status: {
+      type: String,
+      enum: ["pending", "approved","rejected"],
+      default: "pending",
+    },
     profile: profileSchema,
   },
   {

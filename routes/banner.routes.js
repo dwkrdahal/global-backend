@@ -8,9 +8,10 @@ import uploader from "../middlewares/uploader.middleware.js";
 const { uploadSingleImage, uploadSingleVideo } = uploader;
 
 // /banner
-router
-  .route("/")
-  .get(bannerCtrl.getAllBanners);
+router.route("/").get(bannerCtrl.getAllBanners);
+
+// /banner/count
+router.route("/count").get(bannerCtrl.countBanner);
 
 // /banner/image
 router.route("/image").post(uploadSingleImage, bannerCtrl.addNewImageBanner);
@@ -19,10 +20,14 @@ router.route("/image").post(uploadSingleImage, bannerCtrl.addNewImageBanner);
 router.route("/video").post(uploadSingleVideo, bannerCtrl.addNewVideoBanner);
 
 // /banner/image/:id
-router.route("/image/:id").patch(uploadSingleImage, bannerCtrl.updateImageBanner)
+router
+  .route("/image/:id")
+  .patch(uploadSingleImage, bannerCtrl.updateImageBanner);
 
 // /banner/image/:id
-router.route("/video/:id").patch(uploadSingleVideo, bannerCtrl.updateVideoBanner)
+router
+  .route("/video/:id")
+  .patch(uploadSingleVideo, bannerCtrl.updateVideoBanner);
 
 // /banner/:id
 router

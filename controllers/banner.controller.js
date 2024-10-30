@@ -1,6 +1,28 @@
 import Banner from "../models/banner.model.js";
 
 class BannerController {
+
+   // Banner count function
+   countBanner = async (req, res, next) => {
+    try {
+      const bannerCount = await Banner.countDocuments(); // Get total count of banners
+
+      res.status(200).json({
+        result: { count: bannerCount },
+        status: true,
+        msg: "success! banner count retrieved",
+      });
+    } catch (error) {
+      console.error("Error counting banners:", error);
+
+      next({
+        result: error,
+        status: false,
+        msg: "server error! cannot retrieve banner count",
+      });
+    }
+  };
+  
   //add new banner
   addNewImageBanner = async (req, res, next) => {
     try {

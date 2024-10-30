@@ -6,8 +6,9 @@ const featureCtrl = new FeatureController();
 
 router.get("/", featureCtrl.getAllFeatures);
 router.post("/", featureCtrl.addFeature);
+router.route("/count").get(featureCtrl.countFeature);
 router.patch("/edit/:id", featureCtrl.updateFeatureById);
-router.delete("/delete/:id", featureCtrl.deleteFeatureById)
+router.delete("/delete/:id", featureCtrl.deleteFeatureById);
 router.get("/:id", featureCtrl.getFeatureById);
 
 export default router;

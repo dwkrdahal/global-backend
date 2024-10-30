@@ -19,6 +19,22 @@ class AuthController {
 
       const user = userExist || emailExist
 
+      if(user.status !== "active"){
+        return res.status(401).json({
+          result: null,
+          status: false,
+          msg: "user is not active"
+        })
+      }
+
+      if(user.approval_status !== "approved"){
+        return res.status(401).json({
+          result: null,
+          status: false,
+          msg: "user is not approved by admin"
+        })
+      }
+
       // checking password
       const isPasswordValid = await user.comparePassword(data.password);
       if(isPasswordValid){

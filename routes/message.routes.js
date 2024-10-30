@@ -12,12 +12,16 @@ const { fileUpload } = uploader;
 
 // Routes for messages
 // /message
-router.route("/")
-  .post( fileUpload.array("files"), msgCtrl.createMessage)
+router
+  .route("/")
+  .post(fileUpload.array("files"), msgCtrl.createMessage)
   .get(isLoggedIn, msgCtrl.getAllMessages);
 
-  // /message/:id
-router.route("/:id")
+router.route("/count").get(msgCtrl.countMessage);
+
+// /message/:id
+router
+  .route("/:id")
   .get(isLoggedIn, msgCtrl.getMessageById)
   .patch(isLoggedIn, fileUpload.array("files"), msgCtrl.respondToMessage)
   .delete(isLoggedIn, msgCtrl.deleteMessage);

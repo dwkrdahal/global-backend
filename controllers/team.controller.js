@@ -1,6 +1,28 @@
 import Team from "../models/team.model.js";
 
 class teamController {
+
+  // Team count function
+  countTeam = async (req, res, next) => {
+    try {
+      const teamCount = await Team.countDocuments(); // Get total count of teams
+
+      res.status(200).json({
+        result: { count: teamCount },
+        status: true,
+        msg: "success! team count retrieved",
+      });
+    } catch (error) {
+      console.error("Error counting teams:", error);
+
+      next({
+        result: error,
+        status: false,
+        msg: "server error! cannot retrieve team count",
+      });
+    }
+  };
+
   addTeam = async (req, res, next) => {
     try {
       let data = req.body;

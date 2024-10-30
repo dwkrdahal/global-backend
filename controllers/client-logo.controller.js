@@ -1,6 +1,28 @@
 import ClientLogo from "../models/client-logo.model.js";
 
 class ClientlogoController {
+
+   // Client count function
+   countClient = async (req, res, next) => {
+    try {
+      const clientCount = await ClientLogo.countDocuments(); // Get total count of clients
+
+      res.status(200).json({
+        result: { count: clientCount },
+        status: true,
+        msg: "success! client count retrieved",
+      });
+    } catch (error) {
+      console.error("Error counting clients:", error);
+
+      next({
+        result: error,
+        status: false,
+        msg: "server error! cannot retrieve client count",
+      });
+    }
+  };
+
   //insertLogo
   insertLogo = async (req, res, next) => {
     try {

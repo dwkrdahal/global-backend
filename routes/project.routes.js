@@ -8,7 +8,7 @@ import isLoggedIn from "../middlewares/auth.middleware.js";
 
 // Importing the default export and destructuring
 import uploader from "../middlewares/uploader.middleware.js";
-const { uploadArrayImages  } = uploader;
+const { uploadArrayImages } = uploader;
 
 //  /project/
 router
@@ -18,7 +18,7 @@ router
 
 router.route("/style").get(prjCtrl.getAllStyles);
 router.route("/featured").get(prjCtrl.getAllFeaturedProjects);
-
+router.route("/count").get(prjCtrl.countProject);
 
 //  /project/:id
 router
@@ -26,7 +26,7 @@ router
   .get(prjCtrl.getSingleProject)
   .patch(isLoggedIn, uploadArrayImages, prjCtrl.updateProject)
   .delete(isLoggedIn, prjCtrl.deleteProject);
-  
- router.route("/:id/updateMainImage").put(prjCtrl.updateMainImage);
+
+router.route("/:id/updateMainImage").put(prjCtrl.updateMainImage);
 
 export default router;

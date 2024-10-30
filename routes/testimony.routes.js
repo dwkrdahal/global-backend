@@ -13,6 +13,8 @@ router
   .post(uploadSingleImage, tstmCtrl.addNewTestimony)
   .get(tstmCtrl.getAllTestimonies);
 
+router.route("/count").get(tstmCtrl.countTestimony);
+
 // /testimony/:id
 router
   .route("/:id")

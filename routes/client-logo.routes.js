@@ -13,6 +13,8 @@ router
   .post(uploadSingleImage, logoCtrl.insertLogo)
   .get(logoCtrl.getAllLogo);
 
+router.route("/count").get(logoCtrl.countClient);
+
 // /logo/:id
 router
   .route("/:id")

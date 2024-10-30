@@ -19,6 +19,9 @@ router
   )
   .get(teamCtrl.getAllTeams);
 
+  router.route("/count").get(teamCtrl.countTeam);
+
+
 // /team/:id
 router
   .route("/:id")

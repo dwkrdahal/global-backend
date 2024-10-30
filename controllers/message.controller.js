@@ -1,6 +1,29 @@
 import Message from "../models/message.model.js";
 
 class messageController {
+  //count Message
+  // Message count function
+  countMessage = async (req, res, next) => {
+    try {
+      const messageCount = await Message.countDocuments(); // Get total count of messages
+
+      res.status(200).json({
+        result: { count: messageCount },
+        status: true,
+        msg: "success! message count retrieved",
+      });
+    } catch (error) {
+      console.error("Error counting messages:", error);
+
+      next({
+        result: error,
+        status: false,
+        msg: "server error! cannot retrieve message count",
+      });
+    }
+  };
+
+  //create Message
   createMessage = async (req, res, next) => {
     try {
       const { message, projectId } = req.body;
@@ -18,11 +41,11 @@ class messageController {
       } else {
         senderName = req.body.senderName;
         senderEmail = req.body.senderEmail;
-        senderPhone = req.body.senderPhone
+        senderPhone = req.body.senderPhone;
       }
 
-      let images = null
-      let attachments = null
+      let images = null;
+      let attachments = null;
       // prepare image and file
       if (files) {
         images = files

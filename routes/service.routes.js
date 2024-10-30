@@ -13,6 +13,8 @@ router
   .post(uploadImages([{ name: "image", maxCount: 1 }]), serviceCtrl.addService)
   .get(serviceCtrl.getAllServices);
 
+router.route("/count").get(serviceCtrl.countService);
+
 // /service/:id
 router
   .route("/:id")

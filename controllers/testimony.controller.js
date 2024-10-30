@@ -1,6 +1,28 @@
 import Testimony from "../models/testimony.model.js";
 
 class TestimonyController {
+
+   // Testimony count function
+   countTestimony = async (req, res, next) => {
+    try {
+      const testimonyCount = await Testimony.countDocuments(); // Get total count of testimonies
+
+      res.status(200).json({
+        result: { count: testimonyCount },
+        status: true,
+        msg: "success! testimony count retrieved",
+      });
+    } catch (error) {
+      console.error("Error counting testimonies:", error);
+
+      next({
+        result: error,
+        status: false,
+        msg: "server error! cannot retrieve testimony count",
+      });
+    }
+  };
+
   //add new testimony
   addNewTestimony = async (req, res, next) => {
     try {

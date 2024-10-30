@@ -1,6 +1,27 @@
 import Project from "../models/project.model.js";
 
 class projectController {
+  // Project count function
+  countProject = async (req, res, next) => {
+    try {
+      const projectCount = await Project.countDocuments(); // Get total count of projects
+
+      res.status(200).json({
+        result: { count: projectCount },
+        status: true,
+        msg: "success! project count retrieved",
+      });
+    } catch (error) {
+      console.error("Error counting projects:", error);
+
+      next({
+        result: error,
+        status: false,
+        msg: "server error! cannot retrieve project count",
+      });
+    }
+  };
+
   //insertion logic
   insertProject = async (req, res, next) => {
     try {
@@ -242,7 +263,7 @@ class projectController {
     try {
       const projectId = req.params.id; // Get the project ID from the URL parameters
       const { selectedMainImage } = req.body; // Get the new main image from the request body
-  
+
       if (!selectedMainImage || !selectedMainImage._id) {
         return res.status(400).json({
           result: null,
@@ -250,10 +271,10 @@ class projectController {
           msg: "New main image is required and must include an ID",
         });
       }
-  
+
       // Find the project by ID
       const project = await Project.findById(projectId);
-  
+
       if (!project) {
         return res.status(404).json({
           result: null,
@@ -261,10 +282,12 @@ class projectController {
           msg: "Project not found",
         });
       }
-  
+
       // Check if the new main image _id is in the list of images
-      const isImageInList = project.images.some(image => image._id.toString() === selectedMainImage._id);
-  
+      const isImageInList = project.images.some(
+        (image) => image._id.toString() === selectedMainImage._id
+      );
+
       if (!isImageInList) {
         return res.status(400).json({
           result: null,
@@ -272,13 +295,15 @@ class projectController {
           msg: "Selected image is not part of the project images",
         });
       }
-  
+
       // Update the main image to the image with the selected _id
-      project.mainImage = project.images.find(image => image._id.toString() === selectedMainImage._id);
-  
+      project.mainImage = project.images.find(
+        (image) => image._id.toString() === selectedMainImage._id
+      );
+
       // Save the updated project
       const updatedProject = await project.save();
-  
+
       return res.status(200).json({
         result: updatedProject,
         status: true,
@@ -293,7 +318,6 @@ class projectController {
       });
     }
   };
-
 }
 
 export default projectController;

@@ -1,6 +1,28 @@
 import User from "../models/user.model.js";
 
 class userController {
+
+   // User count function
+   countUser = async (req, res, next) => {
+    try {
+      const userCount = await User.countDocuments(); // Get total count of users
+
+      res.status(200).json({
+        result: { count: userCount },
+        status: true,
+        msg: "success! user count retrieved",
+      });
+    } catch (error) {
+      console.error("Error counting users:", error);
+
+      next({
+        result: error,
+        status: false,
+        msg: "server error! cannot retrieve user count",
+      });
+    }
+  };
+
   // get all users list
   getAllUsers = async (req, res, next) => {
     try {
@@ -183,7 +205,7 @@ class userController {
         })
       }
 
-      const user = await User.findByIdAndDelete(req.user._id);
+      const user = await User.findByIdAndDelete(id);
 
       if (!user) {
         res.status(404).json({
