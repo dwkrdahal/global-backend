@@ -8,12 +8,12 @@ import isLoggedIn from "../middlewares/auth.middleware.js";
 
 // Importing the default export and destructuring
 import uploader from "../middlewares/uploader.middleware.js";
-const { uploadArrayImages } = uploader;
+const { uploadArrayImages, uploadSingleImage } = uploader;
 
 //  /project/
 router
   .route("/")
-  .post(isLoggedIn, uploadArrayImages, prjCtrl.insertProject)
+  .post(isLoggedIn, uploadArrayImages(10), prjCtrl.insertProject)
   .get(prjCtrl.getAllProjects);
 
 router.route("/style").get(prjCtrl.getAllStyles);
@@ -24,7 +24,7 @@ router.route("/count").get(prjCtrl.countProject);
 router
   .route("/:id")
   .get(prjCtrl.getSingleProject)
-  .patch(isLoggedIn, uploadArrayImages, prjCtrl.updateProject)
+  .patch(isLoggedIn, uploadArrayImages(10), prjCtrl.updateProject)
   .delete(isLoggedIn, prjCtrl.deleteProject);
 
 router.route("/:id/updateMainImage").put(prjCtrl.updateMainImage);

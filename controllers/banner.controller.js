@@ -1,9 +1,9 @@
 import Banner from "../models/banner.model.js";
+import uploadToCloudinary from "../utils/cloudinaryConfig.js";
 
 class BannerController {
-
-   // Banner count function
-   countBanner = async (req, res, next) => {
+  // Banner count function
+  countBanner = async (req, res, next) => {
     try {
       const bannerCount = await Banner.countDocuments(); // Get total count of banners
 
@@ -22,7 +22,7 @@ class BannerController {
       });
     }
   };
-  
+
   //add new banner
   addNewImageBanner = async (req, res, next) => {
     try {
@@ -30,11 +30,17 @@ class BannerController {
       let image = {};
 
       if (req.file) {
+        // Upload image buffer to Cloudinary
+        const uploadedImage = await uploadToCloudinary(
+          req.file.buffer,
+          "globalconst/banners"
+        );
+
+        // Store the Cloudinary secure URL
         image = {
-          url: req.file?.path,
-          caption: req.file?.originalname,
+          url: uploadedImage.secure_url, // Cloudinary URL
+          caption: req.file.originalname, // Use original name as caption if needed
         };
-        // console.log(image);
       }
 
       const banner = new Banner({
@@ -46,10 +52,10 @@ class BannerController {
       res.status(201).json({
         result: newBanner,
         status: true,
-        msg: "banner added",
+        msg: "Banner added",
       });
     } catch (error) {
-      // console.error(error);
+      console.error(error);
       res.status(500).json({
         result: error,
         status: false,
@@ -64,11 +70,17 @@ class BannerController {
       let video = {};
 
       if (req.file) {
+        // Upload video buffer to Cloudinary
+        const uploadedVideo = await uploadToCloudinary(
+          req.file.buffer,
+          "globalconst/banners",
+          "video"
+        );
+
         video = {
-          url: req.file?.path,
-          caption: req.file?.originalname,
+          url: uploadedVideo.secure_url,
+          caption: req.file.originalname,
         };
-        // console.log(video);
       }
 
       const banner = new Banner({
@@ -111,13 +123,11 @@ class BannerController {
       });
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({
-          result: error,
-          status: false,
-          msg: "Failed to delete banner",
-        });
+      res.status(500).json({
+        result: error,
+        status: false,
+        msg: "Failed to delete banner",
+      });
     }
   };
 
@@ -127,8 +137,13 @@ class BannerController {
       const updateData = req.body;
 
       if (req.file) {
+        const uploadedImage = await uploadToCloudinary(
+          req.file.buffer,
+          "globalconst/banners"
+        );
+
         const updatedImage = {
-          url: req.file.path,
+          url: uploadedImage.secure_url,
           caption: req.file.originalname,
         };
         updateData.image = updatedImage;
@@ -155,13 +170,11 @@ class BannerController {
       });
     } catch (error) {
       // console.error(error);
-      res
-        .status(500)
-        .json({
-          result: error,
-          status: false,
-          msg: "Failed to update banner",
-        });
+      res.status(500).json({
+        result: error,
+        status: false,
+        msg: "Failed to update banner",
+      });
     }
   };
 
@@ -171,8 +184,14 @@ class BannerController {
       const updateData = req.body;
 
       if (req.file) {
+        const uploadedVideo = await uploadToCloudinary(
+          req.file.buffer,
+          "globalconst/banners",
+          "video"
+        );
+
         const updatedVideo = {
-          url: req.file.path,
+          url: uploadedVideo.secure_url,
           caption: req.file.originalname,
         };
         updateData.video = updatedVideo;
@@ -199,13 +218,11 @@ class BannerController {
       });
     } catch (error) {
       // console.error(error);
-      res
-        .status(500)
-        .json({
-          result: error,
-          status: false,
-          msg: "Failed to update banner",
-        });
+      res.status(500).json({
+        result: error,
+        status: false,
+        msg: "Failed to update banner",
+      });
     }
   };
 
@@ -246,13 +263,11 @@ class BannerController {
       });
     } catch (error) {
       // console.error(error);
-      res
-        .status(500)
-        .json({
-          result: error,
-          status: false,
-          msg: "Failed to get banners",
-        });
+      res.status(500).json({
+        result: error,
+        status: false,
+        msg: "Failed to get banners",
+      });
     }
   };
 }

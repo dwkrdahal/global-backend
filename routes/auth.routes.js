@@ -10,4 +10,8 @@ router.post("/login", authCtrl.login );
 //  /auth/register
 router.post("/register", authCtrl.register);
 
+//  /auth/change-password
+router.post("/change-password", authCtrl.changePassword);
+
+
 export default router;

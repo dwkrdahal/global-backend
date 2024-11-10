@@ -1,4 +1,5 @@
 import Team from "../models/team.model.js";
+import uploadToCloudinary from "../utils/cloudinaryConfig.js";
 
 class teamController {
 
@@ -28,40 +29,52 @@ class teamController {
       let data = req.body;
       let avatar = {};
       let cover = {};
-
-      // console.log("files",req.files);
-      
-      if (req.files.avatar && req.files.avatar?.length > 0) {
+  
+      // Upload avatar image if provided
+      if (req.files.avatar && req.files.avatar.length > 0) {
         const avatarFile = req.files.avatar[0];
-        avatar.url = avatarFile?.path;
-        avatar.caption = avatarFile?.originalname;
+        const uploadedAvatar = await uploadToCloudinary(
+          avatarFile.buffer,
+          "team/avatar"  // Folder path in Cloudinary
+        );
+        avatar = {
+          url: uploadedAvatar.secure_url, // Cloudinary URL
+          caption: avatarFile.originalname, // Use original name as caption
+        };
       }
-
-      if (req.files.cover && req.files.cover?.length > 0) {
+  
+      // Upload cover image if provided
+      if (req.files.cover && req.files.cover.length > 0) {
         const coverFile = req.files.cover[0];
-        cover.url = coverFile?.path;
-        cover.caption = coverFile?.originalname;
+        const uploadedCover = await uploadToCloudinary(
+          coverFile.buffer,
+          "team/cover"  // Folder path in Cloudinary
+        );
+        cover = {
+          url: uploadedCover.secure_url, // Cloudinary URL
+          caption: coverFile.originalname, // Use original name as caption
+        };
       }
-
+  
+      // Create new team member with avatar and cover
       const team = new Team({
         ...data,
         avatar,
         cover,
-      })
+      });
       const newTeam = await team.save();
-
+  
       res.status(201).json({
         result: newTeam,
         status: true,
-        msg: "team member added"
-      })
+        msg: "Team member added successfully",
+      });
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       next({
         result: error,
         status: false,
-        msg: "error while creating team",
+        msg: "Error while creating team",
       });
     }
   };
@@ -70,58 +83,71 @@ class teamController {
     try {
       const data = req.body;
       const teamId = req.params.id;
-
-      const team = await Team.findById(teamId)
-      if(!team){
+  
+      // Find the team member by ID
+      const team = await Team.findById(teamId);
+      if (!team) {
         return res.status(404).json({
           result: null,
           status: false,
-          msg: "team member not found",
+          msg: "Team member not found",
         });
       }
-
-      let {avatar, cover} = team;
-      console.log(req.files);
-      
-
-      if(req.files.avatar && req.files.avatar?.length > 0){
+  
+      let { avatar, cover } = team;
+  
+      // Update avatar image if a new one is provided
+      if (req.files.avatar && req.files.avatar.length > 0) {
         const avatarFile = req.files.avatar[0];
-        avatar.url = avatarFile.path;
-        avatar.caption = avatarFile.originalname
+        const uploadedAvatar = await uploadToCloudinary(
+          avatarFile.buffer,
+          "team/avatar"  // Folder path in Cloudinary
+        );
+        avatar = {
+          url: uploadedAvatar.secure_url, // Cloudinary URL
+          caption: avatarFile.originalname, // Use original name as caption
+        };
       }
-
-      if(req.files.cover && req.files.cover?.length > 0){
+  
+      // Update cover image if a new one is provided
+      if (req.files.cover && req.files.cover.length > 0) {
         const coverFile = req.files.cover[0];
-        cover.url = coverFile.path;
-        cover.caption = coverFile.originalname
+        const uploadedCover = await uploadToCloudinary(
+          coverFile.buffer,
+          "team/cover"  // Folder path in Cloudinary
+        );
+        cover = {
+          url: uploadedCover.secure_url, // Cloudinary URL
+          caption: coverFile.originalname, // Use original name as caption
+        };
       }
-
+  
+      // Update team member with new data and updated avatar and cover
       const updatedTeam = await Team.findByIdAndUpdate(
         teamId,
         { ...data, avatar, cover },
         { new: true }
       );
-
+  
       if (!updatedTeam) {
         return res.status(404).json({
           result: null,
           status: false,
-          msg: "team member not found",
+          msg: "Team member not found",
         });
       }
-
+  
       res.status(200).json({
         result: updatedTeam,
         status: true,
-        msg: "team member updated successfully!",
+        msg: "Team member updated successfully!",
       });
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       next({
         result: error,
         status: false,
-        msg: "error while editing team",
+        msg: "Error while updating team member",
       });
     }
   };

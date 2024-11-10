@@ -53,7 +53,7 @@ class AuthController {
       }
     }
     catch (error) {
-      console.log(error);
+      // console.log(error);
       next({
         result: error,
         status: 500,
@@ -110,6 +110,53 @@ class AuthController {
       });
     }
   };
+  
+  changePassword = async (req, res, next) => {
+    try {
+      const { userId, currentPassword, newPassword } = req.body;
+  
+      // Find the user by userId
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({
+          result: null,
+          status: false,
+          msg: "User not found",
+        });
+      }
+  
+      // Check if the current password matches
+      const isPasswordValid = await user.comparePassword(currentPassword);
+      if (!isPasswordValid) {
+        return res.status(400).json({
+          result: null,
+          status: false,
+          msg: "Current password is incorrect",
+        });
+      }
+  
+      // Update the password field with the new password
+      user.password = newPassword;
+      await user.save(); // The `pre-save` hook will hash the password automatically
+  
+      // Respond with a success message
+      res.json({
+        result: null,
+        status: true,
+        msg: "Password changed successfully",
+      });
+  
+    } catch (error) {
+      console.error(error);
+      next({
+        result: error,
+        status: 500,
+        msg: "Server Error! Password change failed",
+      });
+    }
+  };
+  
 }
 
 export default AuthController;

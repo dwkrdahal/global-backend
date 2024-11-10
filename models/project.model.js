@@ -13,6 +13,7 @@ const DesignArchitectSchema = new Schema(
     userId: { type: Schema.Types.ObjectId, ref: "User" },
     name: String,
     email: String,
+    position: String,
   },
   { _id: false }
 );
@@ -28,26 +29,23 @@ const ProjectSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
+    location: { type: String, required: true },
     architectureStyle: { type: String },
-    isFeatured: {type: Boolean, default: false},
-    isActive: {type: Boolean, default: true},
-    projectType: {
-      type: String,
-      required: true,
-    },
+    isFeatured: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
+    projectType: { type: String, required: true },
     projectStatus: {
       type: String,
       enum: ["planned", "in-progress", "completed", "on-hold", "cancelled"],
       required: true,
     },
-    location: { type: String, required: true },
     siteArea: {
       value: { type: Number },
       unit: { type: String, default: "sq. ft." },
     },
     builtUpArea: {
       value: { type: Number },
-      unit: { type: String, default: "sq. ft."  },
+      unit: { type: String, default: "sq. ft." },
     },
     year: { type: YearSchema },
     designArchitect: { type: DesignArchitectSchema },
@@ -55,7 +53,7 @@ const ProjectSchema = new Schema(
     mainImage: ImageSchema,
     client: {
       name: { type: String, required: true },
-      email:{ type: String, },
+      email: { type: String },
       contact: { type: String, required: true },
     },
     createdBy: {

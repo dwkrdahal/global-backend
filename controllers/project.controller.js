@@ -1,4 +1,5 @@
 import Project from "../models/project.model.js";
+import uploadToCloudinary from "../utils/cloudinaryConfig.js";
 
 class projectController {
   // Project count function
@@ -23,20 +24,36 @@ class projectController {
   };
 
   //insertion logic
+
   insertProject = async (req, res, next) => {
     try {
       const data = req.body;
       let images = [];
       let mainImage = null;
 
+      // Upload images to Cloudinary if they exist in req.files
       if (req.files && req.files.length > 0) {
-        images = req.files.map((file) => ({
-          url: file.path,
-          caption: file.originalname,
-        }));
+        // Map over files and upload each to Cloudinary
+        images = await Promise.all(
+          req.files.map(async (file) => {
+            const uploadedImage = await uploadToCloudinary(
+              file.buffer,
+              "globalconst/projects"
+            );
+            return {
+              url: uploadedImage.secure_url,
+              caption: file.originalname, 
+            };
+          })
+        );
       } else if (req.file) {
+        // Single image upload to Cloudinary if there's only req.file
+        const uploadedImage = await uploadToCloudinary(
+          req.file.buffer,
+          "globalconst/projects"
+        );
         images.push({
-          url: req.file.path,
+          url: uploadedImage.secure_url,
           caption: req.file.originalname,
         });
       }
@@ -44,6 +61,7 @@ class projectController {
       // Assign the first image as mainImage if available
       mainImage = images.length > 0 ? images[0] : null;
 
+      // Create a new project document with Cloudinary URLs
       const newProject = new Project({
         ...data,
         images,
@@ -59,10 +77,11 @@ class projectController {
         msg: "success! project created",
       });
     } catch (error) {
+      console.error(error);
       next({
         result: error,
         status: 400,
-        msg: "server error! cannot create project",
+        msg: error.message,
       });
     }
   };
@@ -138,12 +157,20 @@ class projectController {
         images = images ? [images] : [];
       }
 
-      // Handle new image uploads
+      // Handle new image uploads using cloudinary
       if (req.files && req.files.length > 0) {
-        newImages = req.files.map((file) => ({
-          url: file.path,
-          caption: file.originalname,
-        }));
+        newImages = await Promise.all(
+          req.files.map(async (file) => {
+            const uploadedImage = await uploadToCloudinary(
+              file.buffer,
+              "globalconst/projects"  // Cloudinary folder path
+            );
+            return {
+              url: uploadedImage.secure_url,
+              caption: file.originalname,
+            };
+          })
+        );
       }
 
       // Merge old and new images

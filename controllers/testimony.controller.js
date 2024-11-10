@@ -1,9 +1,9 @@
 import Testimony from "../models/testimony.model.js";
+import uploadToCloudinary from "../utils/cloudinaryConfig.js";
 
 class TestimonyController {
-
-   // Testimony count function
-   countTestimony = async (req, res, next) => {
+  // Testimony count function
+  countTestimony = async (req, res, next) => {
     try {
       const testimonyCount = await Testimony.countDocuments(); // Get total count of testimonies
 
@@ -30,11 +30,14 @@ class TestimonyController {
       let image = {};
 
       if (req.file) {
+        // Upload image buffer to Cloudinary
+        const uploadedImage = await uploadToCloudinary(req.file.buffer, "globalconst/testimony");
+
+        // Store the Cloudinary secure URL
         image = {
-          url: req.file?.path,
-          caption: req.file?.originalname,
+          url: uploadedImage.secure_url, // Cloudinary URL
+          caption: req.file.originalname, // Use original name as caption if needed
         };
-        // console.log(image);
       }
 
       const testimony = new Testimony({
@@ -77,13 +80,11 @@ class TestimonyController {
       });
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({
-          result: error,
-          status: false,
-          msg: "Failed to delete testimony",
-        });
+      res.status(500).json({
+        result: error,
+        status: false,
+        msg: "Failed to delete testimony",
+      });
     }
   };
 
@@ -91,13 +92,18 @@ class TestimonyController {
     try {
       const { id } = req.params;
       const updateData = req.body;
+      let image = {};
 
       if (req.file) {
-        const updatedImage = {
-          url: req.file.path,
-          caption: req.file.originalname,
+        // Upload image buffer to Cloudinary
+        const uploadedImage = await uploadToCloudinary(req.file.buffer, "globalconst/testimony");
+
+        // Store the Cloudinary secure URL
+        image = {
+          url: uploadedImage.secure_url, // Cloudinary URL
+          caption: req.file.originalname, // Use original name as caption if needed
         };
-        updateData.image = updatedImage;
+        updateData.image = image;
       } else {
         // Remove `image` from updateData if it's being sent as an invalid string
         delete updateData.image;
@@ -120,14 +126,12 @@ class TestimonyController {
         msg: "update successful",
       });
     } catch (error) {
-      // console.error(error);
-      res
-        .status(500)
-        .json({
-          result: error,
-          status: false,
-          msg: "Failed to update testimony",
-        });
+      console.error(error);
+      res.status(500).json({
+        result: error,
+        status: false,
+        msg: "Failed to update testimony",
+      });
     }
   };
 
@@ -168,13 +172,11 @@ class TestimonyController {
       });
     } catch (error) {
       // console.error(error);
-      res
-        .status(500)
-        .json({
-          result: error,
-          status: false,
-          msg: "Failed to get testimonies",
-        });
+      res.status(500).json({
+        result: error,
+        status: false,
+        msg: "Failed to get testimonies",
+      });
     }
   };
 }

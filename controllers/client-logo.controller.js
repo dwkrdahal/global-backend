@@ -1,9 +1,9 @@
 import ClientLogo from "../models/client-logo.model.js";
+import uploadToCloudinary from "../utils/cloudinaryConfig.js";
 
 class ClientlogoController {
-
-   // Client count function
-   countClient = async (req, res, next) => {
+  // Client count function
+  countClient = async (req, res, next) => {
     try {
       const clientCount = await ClientLogo.countDocuments(); // Get total count of clients
 
@@ -26,17 +26,18 @@ class ClientlogoController {
   //insertLogo
   insertLogo = async (req, res, next) => {
     try {
-
       const newData = req.body;
       let image = {};
 
       if (req.file) {
+        // Upload image buffer to Cloudinary
+        const uploadedImage = await uploadToCloudinary(req.file.buffer, "logo");
+
+        // Store the Cloudinary secure URL
         image = {
-          url: req.file.path,
-          caption: req.file.originalname,
+          url: uploadedImage.secure_url, // Cloudinary URL
+          caption: req.file.originalname, // Use original name as caption if needed
         };
-        // console.log(image);
-        
       }
 
       const clientLogo = new ClientLogo({
@@ -90,21 +91,26 @@ class ClientlogoController {
   };
 
   updateLogo = async (req, res, next) => {
+    let image = {};
     try {
       const { id } = req.params;
       const updateData = req.body;
-      
+
       if (req.file) {
-        const updatedLogo = {
-          url: req.file.path,
-          caption: req.file.originalname,
+        // Upload image buffer to Cloudinary
+        const uploadedImage = await uploadToCloudinary(req.file.buffer, "logo");
+        
+        // Store the Cloudinary secure URL
+        image = {
+          url: uploadedImage?.secure_url, // Cloudinary URL
+          caption: req.file?.originalname, // Use original name as caption if needed
         };
-        updateData.image = updatedLogo;
+
+        updateData.image = image;
       } else {
         // Remove `image` from updateData if it's being sent as an invalid string
         delete updateData.image;
       }
-  
 
       const updatedClientLogo = await ClientLogo.findByIdAndUpdate(
         id,
@@ -171,7 +177,7 @@ class ClientlogoController {
         .status(500)
         .json({ result: error, status: false, msg: "Failed to get logo" });
     }
-  }
+  };
 }
 
 export default ClientlogoController;

@@ -1,4 +1,5 @@
 import Message from "../models/message.model.js";
+import uploadToCloudinary from "../utils/cloudinaryConfig.js";
 
 class messageController {
   //count Message
@@ -48,12 +49,29 @@ class messageController {
       let attachments = null;
       // prepare image and file
       if (files) {
-        images = files
-          .filter((file) => file.mimetype.startsWith("image/"))
-          .map((file) => ({ url: file.path, caption: file.originalname }));
+        // Upload images to Cloudinary
+        images = await Promise.all(
+          files
+            .filter((file) => file.mimetype.startsWith("image/"))
+            .map(async (file) => {
+              const uploadedImage = await uploadToCloudinary(
+                file.buffer,
+                "globalconst/message" // Cloudinary folder path
+              );
+              return {
+                url: uploadedImage.secure_url,
+                caption: file.originalname,
+              };
+            })
+        );
+      
+        // Process non-image files as attachments without Cloudinary upload
         attachments = files
           .filter((file) => !file.mimetype.startsWith("image/"))
-          .map((file) => ({ url: file.path, name: file.originalname }));
+          .map((file) => ({
+            url: file.path,  // Local or pre-configured path for non-image files
+            name: file.originalname,
+          }));
       }
       //creste new message
       const newMessage = new Message({

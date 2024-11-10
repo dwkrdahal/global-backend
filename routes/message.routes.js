@@ -6,15 +6,15 @@ const msgCtrl = new messageController();
 
 import isLoggedIn from "../middlewares/auth.middleware.js";
 
-// Importing the default export and destructuring
+// Importing the uploader middleware
 import uploader from "../middlewares/uploader.middleware.js";
-const { fileUpload } = uploader;
+const { uploadSingleImage, uploadArrayImages, uploadArrayVideos, handleFileUpload } = uploader;
 
 // Routes for messages
 // /message
 router
   .route("/")
-  .post(fileUpload.array("files"), msgCtrl.createMessage)
+  .post(handleFileUpload, msgCtrl.createMessage) // Using the file upload middleware here
   .get(isLoggedIn, msgCtrl.getAllMessages);
 
 router.route("/count").get(msgCtrl.countMessage);
@@ -23,7 +23,7 @@ router.route("/count").get(msgCtrl.countMessage);
 router
   .route("/:id")
   .get(isLoggedIn, msgCtrl.getMessageById)
-  .patch(isLoggedIn, fileUpload.array("files"), msgCtrl.respondToMessage)
+  .patch(isLoggedIn, uploadArrayImages(5), msgCtrl.respondToMessage)  
   .delete(isLoggedIn, msgCtrl.deleteMessage);
 
 export default router;
