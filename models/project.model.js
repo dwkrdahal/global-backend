@@ -8,7 +8,7 @@ const YearSchema = new Schema({
 });
 
 // Schema for design architect details
-const DesignArchitectSchema = new Schema(
+const DesignerSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User" },
     name: String,
@@ -48,7 +48,7 @@ const ProjectSchema = new Schema(
       unit: { type: String, default: "sq. ft." },
     },
     year: { type: YearSchema },
-    designArchitect: { type: DesignArchitectSchema },
+    designer: { type: DesignerSchema },
     images: [ImageSchema],
     mainImage: ImageSchema,
     client: {
